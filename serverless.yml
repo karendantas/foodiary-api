@@ -1,6 +1,9 @@
 org: karendev
 service: foodiary-api
 
+plugins:
+  - serverless-offline
+
 provider:
   name: aws
   region: sa-east-1
@@ -16,15 +19,15 @@ build:
     sourcemap: false
 
 functions:
-  hello:
-    handler: src/signin.handler
+  signin:
+    handler: src/functions/signin.handler
     events:
       - httpApi:
-          path: /
+          path: /signin
           method: post
 
   signup:
-    handler: src/signup.handler
+    handler: src/functions/signup.handler
     events:
       - httpApi:
           path: /signup
