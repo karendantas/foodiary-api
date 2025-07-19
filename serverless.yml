@@ -1,0 +1,31 @@
+org: karendev
+service: foodiary-api
+
+provider:
+  name: aws
+  region: sa-east-1
+  runtime: nodejs22.x
+  architecture: arm64
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    minify: true
+    sourcemap: false
+
+functions:
+  hello:
+    handler: src/signin.handler
+    events:
+      - httpApi:
+          path: /
+          method: post
+
+  signup:
+    handler: src/signup.handler
+    events:
+      - httpApi:
+          path: /signup
+          method: post
