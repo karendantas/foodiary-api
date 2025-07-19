@@ -34,7 +34,7 @@ export class CreateMealController {
         const presignedUrl = await getSignedUrl(s3Client, command, {expiresIn: 600})
 
         const [meal] = await db.insert(mealsTable).values({
-            inputFileKey: 'input_file_key',
+            inputFileKey: fileKey,
             inputType: data.fileType === 'audio/m4a' ? 'audio' : 'picture',
             status: 'uploading',
             userId: userId,

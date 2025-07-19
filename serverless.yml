@@ -69,6 +69,15 @@ functions:
       - httpApi:
           path: /meals/{mealId}
           method: get
+  
+  fileUploadedEvent:
+    handler: src/functions/fileUploadedEvent.handler
+    events:
+      - s3:
+          bucket: !Ref UploadsBucket
+          event: s3:ObjectCreated:*
+          existing: true
+          forceDeploy: true
 
 resources:
   Resources:
