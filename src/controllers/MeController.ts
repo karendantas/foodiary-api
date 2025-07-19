@@ -5,7 +5,6 @@ import { ok } from "../utils/http";
 import { usersTable } from "../db/schema";
 
 
-
 export class MeController {
     static async handle({userId}: ProtectedHttpRequest): Promise<HttpResponse>{
         const user = await db.query.usersTable.findFirst({
