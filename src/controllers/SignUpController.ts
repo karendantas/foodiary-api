@@ -1,5 +1,8 @@
+import { eq } from "drizzle-orm/sql";
+import { db } from "../db";
+import { usersTable } from "../db/schema";
 import { HttpRequest, HttpResponse } from "../types/http";
-import { badRequest, created } from "../utils/http";
+import { badRequest, conflict, created } from "../utils/http";
 import z from 'zod'
 
 const schema = z.object({
@@ -16,8 +19,6 @@ const schema = z.object({
     })
 })
 
-
-
 export class SignUpController {
     static async handle({body}: HttpRequest): Promise<HttpResponse>{
 
@@ -27,7 +28,30 @@ export class SignUpController {
             return badRequest({erros: error.issues})
         }
 
+        const userAlreadyExists = await db.query.usersTable.findFirst({
+            columns: {
+                'email': true
+            },
+            where: eq(usersTable.email, data.account.email)
+        })
 
-        return created(data) 
+        if (userAlreadyExists){
+            return conflict({error: 'This email is already in use'})
+        }
+
+        const [user] = await db.insert(usersTable).values({
+            ...data,
+            ...data.account,
+            calories: 0,
+            fats: 0,
+            proteins: 0,
+            carbohydrates: 0,
+        }).returning({
+            id: usersTable.id
+        })
+
+        return created({
+            userId: user.id
+        })
     }
 }
