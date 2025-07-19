@@ -20,7 +20,7 @@ export class ListMealsController {
 
         const endDate = new Date (data.date)
         endDate.setUTCHours(23,59,59,59)
-        const meal = await db.query.mealsTable.findMany({
+        const meals = await db.query.mealsTable.findMany({
             columns: {
                 id: true,
                 foods: true,
@@ -36,6 +36,6 @@ export class ListMealsController {
             ),
         })
        
-        return ok({meal})
+        return ok({meals})
     }
 }
