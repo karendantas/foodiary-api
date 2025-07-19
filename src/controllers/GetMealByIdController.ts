@@ -7,19 +7,17 @@ import z from 'zod'
 import { mealsTable } from "../db/schema";
 
 const schema = z.object({
-    date: z.iso.date().transform(dateStr => new Date(dateStr))
+    mealId: z.uuid()
 })
-export class ListMealsController {
-    static async handle({userId, queryParams}: ProtectedHttpRequest): Promise<HttpResponse>{
-   
-        const {success, error, data} = schema.safeParse(queryParams)
+export class GetMealByIdController {
+    static async handle({userId, params}: ProtectedHttpRequest): Promise<HttpResponse>{
+     
+        const {success, error, data} = schema.safeParse(params)
 
         if (!success){
             return badRequest({errors: error.issues})
         }
 
-        const endDate = new Date (data.date)
-        endDate.setUTCHours(23,59,59,59)
         const meal = await db.query.mealsTable.findMany({
             columns: {
                 id: true,
@@ -27,12 +25,13 @@ export class ListMealsController {
                 createdAt: true,
                 icon: true,
                 name: true,
+                status: true,
             },
             where: and( 
+           
+                eq(mealsTable.id, data.mealId),
                 eq(mealsTable.userId, userId),
-                eq(mealsTable.status, 'success'),
-                gte(mealsTable.createdAt, data.date),
-                lte(mealsTable.createdAt, endDate),
+        
             ),
         })
        
