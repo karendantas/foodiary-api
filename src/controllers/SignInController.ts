@@ -5,6 +5,8 @@ import { badRequest, ok, unauthorized } from "../utils/http";
 import z from 'zod'
 import { usersTable } from "../db/schema";
 import { compare } from "bcryptjs";
+import {sign} from 'jsonwebtoken'
+import { generateAccessToken } from "../lib/jwt";
 
 
 const schema = z.object({
@@ -40,6 +42,11 @@ export class SignInController {
         if (!isPasswordValid){
             return unauthorized({error: 'Invalid credentials'})
         }
-        return ok(user)
+
+        const accessToken = generateAccessToken(user.id)
+
+        return ok({
+            accessToken
+        })
     }
 }
