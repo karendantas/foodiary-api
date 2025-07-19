@@ -3,6 +3,7 @@ import { db } from "../db";
 import { usersTable } from "../db/schema";
 import { HttpRequest, HttpResponse } from "../types/http";
 import { badRequest, conflict, created } from "../utils/http";
+import {hash} from 'bcryptjs'
 import z from 'zod'
 
 const schema = z.object({
@@ -30,7 +31,7 @@ export class SignUpController {
 
         const userAlreadyExists = await db.query.usersTable.findFirst({
             columns: {
-                'email': true
+                email: true
             },
             where: eq(usersTable.email, data.account.email)
         })
@@ -39,9 +40,11 @@ export class SignUpController {
             return conflict({error: 'This email is already in use'})
         }
 
+        const hashPassword = await hash(data.account.password, 8)
         const [user] = await db.insert(usersTable).values({
             ...data,
             ...data.account,
+            password: hashPassword,
             calories: 0,
             fats: 0,
             proteins: 0,
