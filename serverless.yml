@@ -35,3 +35,10 @@ functions:
       - httpApi:
           path: /signup
           method: post
+          
+  me:
+    handler: src/functions/me.handler
+    events:
+      - httpApi:
+          path: /me
+          method: get
